@@ -40,19 +40,28 @@ function Chat({ user }) {
   const sendMessage = async () => {
     if (!message.trim() || !user) return;
 
-    const res = await fetch(`${API_BASE}/api/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        text: message,
-        userId: user.uid,
-        userName: user.displayName 
-      }),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/api/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          text: message,
+          userId: user.uid,
+          userName: user.displayName 
+        }),
+      });
 
-    const newMessage = await res.json();
-    setMessages([...messages, newMessage]);
-    setMessage("");
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status} ${res.statusText}`);
+      }
+
+      const newMessage = await res.json();
+      setMessages([...messages, newMessage]);
+      setMessage("");
+    } catch (err) {
+      console.error("Send message failed:", err);
+      alert(`Failed to send: ${err.message}`);
+    }
   };
 
   // delete message
