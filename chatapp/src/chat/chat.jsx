@@ -50,9 +50,12 @@ function Chat({ user }) {
           userName: user.displayName 
         }),
       });
-
       if (!res.ok) {
-        throw new Error(`API error: ${res.status} ${res.statusText}`);
+        // try to read server-provided error message
+        let errBody = null;
+        try { errBody = await res.json(); } catch (e) { /* ignore */ }
+        const serverMsg = errBody && errBody.error ? errBody.error : `${res.status} ${res.statusText}`;
+        throw new Error(serverMsg);
       }
 
       const newMessage = await res.json();
