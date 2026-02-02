@@ -6,8 +6,8 @@ export const login = async () => {
   try {
     await signInWithPopup(auth, provider);
   } catch (err) {
-    console.error(err);
-    alert("Login failed");
+    console.error("Firebase login error:", err);
+    alert(`Login failed: ${err.code || err.message || "Unknown error"}`);
   }
 };
 
